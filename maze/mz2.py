@@ -25,7 +25,7 @@ level_1 = [
 "XXXXXXXXXXXX  XXXXX   XXX",
 "XXXXXXXXXXXX  XXXXX    XX",
 "XX                     XX",
-"XXXX  XXXXXX  XXXX  EXXXX",
+"XXXX  XXXXXX  XXXX  XXXXX",
 "XXXX  XXXXXX  XXXXXXXXXXX",
 "XXXXE            XXXXXXXX",
 "XXXXXXXXXXEXXXX  XXXXXXXX",
@@ -43,23 +43,23 @@ level_1 = [
 level_2 = [
 "XXXXXXXXXXXXXXXXXXXXXXXXX",
 "XXX   XXXXXX  XXXXXXXXXXX",
-"XXX  XXXXXXXP XXXXXXXXXXX",
+"XXX  XXXXXXP  XXXXXXXXXXX",
 "XXX  XXXXXXX  XXXXXXXXXXX",
 "XXX                  XXXX",
-"XXX  XX XXXX  XXXXX  XXXX",
-"XXX  XXGXXXX  XXXXXE  EXX",
-"XXX  XXXXXXX  XXXXX   XXX",
-"XXX  XXXXXXX  XXXXX    XX",
+"XXXXXXX XXXXG XXXXX  XXXX",
+"XXXXXXX XXXX  XXXXXE  EXX",
+"XXXXXXXXXXXX  XXXXX   XXX",
+"XXXXXXXXXXXX  XXXXX    XX",
 "XX                     XX",
-"XXXX  XXXXXX  XXXX   XXXX",
+"XXXX  XXXXXX  XXXX  XXXXX",
 "XXXX  XXXXXX  XXXXXXXXXXX",
-"XXXXE            XXX XXXX",
-"XXXXXXX  XEXXXX  XXXXXXXX",
-"XXXXXXXX  XXXXXX  XXXXXXXX",
-"XXXXXXX  XXXXXX  XXEXXXXX",
+"XXXXE            XXXXXXXX",
+"XXXXXXXXXXEXXXX  XXXXXXXX",
+"XXXXXXXXXXXXXXX  XXXXXXXX",
+"XXXXXXXXXXXXXXX  XXEXXXXX",
 "XX               XXXXXXXX",
-"XX   XX  XXXXXXXXXXXXXXXX",
-"XX   XX  X              X",
+"XX   XXXXXXXXXXXXXXXXXXXX",
+"XX   XXXXX              X",
 "XX   XXXXXXXXXXXXX  XXXXX",
 "XX     XXXXXXXXXXX  XXXXX",
 "XX            XXXX      X",
@@ -156,8 +156,30 @@ class Player(t.Turtle):
                 g.ht()
                 golds.remove(g)
         if not golds:
-            print("金币吃完啦！")
-            success()
+            show_success()
+
+
+class LevelPen(t.Turtle):
+    def __init__(self):
+        super().__init__()
+        self.ht()
+        self.speed(0)
+        self.penup()
+
+    def draw_success(self, title, msg):
+        self.goto(-100, -100)
+        self.fillcolor('green')
+        self.begin_fill()
+        for i in range(4):
+            self.fd(200)
+            self.left(90)
+        self.end_fill()
+        self.goto(-80,0)
+        self.color('yellow')
+        self.write(title, align='left', font=('Arial', 20, 'bold'))
+        self.goto(-80, -50)
+        self.write(msg, align='left', font=('Arial', 20, 'bold'))
+
 
 class Pen(t.Turtle):
     def __init__(self):
@@ -191,68 +213,41 @@ class Pen(t.Turtle):
                     enemies.append(ene)
                     ene.goto(screen_x, screen_y)
                     ene.st()
-#进入下一关 start
-current_level = 1
-def success():
-    if(current_level == len(levels)):
-        print('你已称王！太帅啦！')
-        show_success_msg('你已称王', '按回车键从新开始')
+
+level_pen = LevelPen()
+def show_success():
+    if(len(levels) == current_level):
+        print('你已称王！按回车键从新开始玩')
+        level_pen.draw_success('你已称王!!!', '按回车键从新开始玩')
     else:
-        print('成功过关，按回车键进入下一关')
-        show_success_msg('成功过关', '按回车键进入下一关')
+        print('成功晋级！按回车键进入下一级')
+        level_pen.draw_success('成功晋级!', '按回车键进入下一级')
 
-success_pen = t.Turtle() #用来写成功消息的画笔
-def show_success_msg(title, msg):
-    success_pen.ht()
-    success_pen.speed(0)
-    success_pen.penup()
-    success_pen.goto(-100, -100)
-    success_pen.fillcolor('green') #设置填充色
-    success_pen.begin_fill() #开始填充
-    for i in range(4):
-        success_pen.fd(200)
-        success_pen.left(90)
-    success_pen.end_fill() #结束填充
-    success_pen.goto(-80,30)
-    success_pen.color('yellow')
-    success_pen.write(title, align='left', font=('Arial', 20, 'bold'))
-    success_pen.goto(-80,-30)
-    success_pen.write(msg, align='left', font=('Arial', 20, 'bold'))   
 
-#进入下一关
 def next_level():
     global current_level
     if(current_level == len(levels)):
+        print("已经达到最高等级")
         current_level = 1
     else:
         current_level = current_level + 1
 
-    #清楚提示信息
-    success_pen.clear()
-
-    #隐藏并清空敌人
+    print('loading next level')
+    level_pen.clear()
+    pen.clear()
     for e in enemies:
         e.ht()
     enemies.clear()
-
-    #清除迷宫的砖墙
-    pen.clear()
-
-    #重建迷宫
     pen.make_maze()
-    
-    #给恶魔加定时器，让他动起来
-    for e in enemies:
-        t.ontimer(e.move, random.randint(100,300))
 
-#end
-    
+
 score = 0
 pen = Pen()
 player = Player()
 walls = []
 golds = []
 enemies = []
+current_level = 1
 pen.make_maze()
 
 mz.listen()
@@ -260,7 +255,7 @@ mz.onkey(player.go_right, 'Right')
 mz.onkey(player.go_left, 'Left')
 mz.onkey(player.go_up, 'Up')
 mz.onkey(player.go_down, 'Down')
-mz.onkey(next_level, 'Return') #回车键
+mz.onkey(next_level, 'Return')
 
 for e in enemies:
     t.ontimer(e.move, random.randint(100,300))
