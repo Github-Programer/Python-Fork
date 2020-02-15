@@ -84,7 +84,18 @@ game.onkey(xm_down, 'x')
 game.onkey(ruhua_up, 'Up')
 game.onkey(ruhua_down, 'Down')
 
-while True:
+#判定是否要退出
+running = True 
+def stop_loop():
+    global running
+    running = False
+
+#获得窗口的Tk对象，并注册关闭事件
+root = game.getcanvas().winfo_toplevel()
+root.protocol('WM_DELETE_WINDOW', stop_loop)
+
+#主循环
+while running:
     game.update()
     pp.setx(pp.xcor() + pp.dx)
     pp.sety(pp.ycor() + pp.dy)
@@ -116,5 +127,4 @@ while True:
         print("如花得分！")
         write_score()
 
-
-game.mainloop()
+#game.mainloop()
