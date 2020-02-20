@@ -32,15 +32,31 @@ with open('city_count.txt', 'w') as f:
 import wordcloud #生成词云的模块
 import matplotlib.pyplot as plt 
 
-ccloud = wordcloud.WordCloud(background_color='white', width=1600, height=800, font_path='/Users/zjueman/Library/fonts/HYQuHeiW.ttf')
-ccloud.generate_from_frequencies(frequencies=city_dict)
+# ccloud = wordcloud.WordCloud(background_color='white', width=1600, height=800, font_path='/Users/zjueman/Library/fonts/HYQuHeiW.ttf')
+# ccloud.generate_from_frequencies(frequencies=city_dict)
 
-plt.figure()
-plt.imshow(ccloud, interpolation='bilinear')
-plt.axis('off')
-plt.show()
+# plt.figure()
+# plt.imshow(ccloud, interpolation='bilinear')
+# plt.axis('off')
+# plt.show()
 
 #5. 生成爱心词云，并存图片
+import numpy as np
+import PIL
+
+heart_mask = np.array(PIL.Image.open('heart.jpg'))
+ccloud = wordcloud.WordCloud(background_color='white', mask=heart_mask, font_path='/Users/zjueman/Library/fonts/HYQuHeiW.ttf')
+ccloud.generate_from_frequencies(frequencies=city_dict)
+
+plt.figure(dpi=1200) #dpi指定图片清晰度
+plt.imshow(ccloud, interpolation='bilinear')
+plt.axis('off')
+plt.savefig('heart.png') #保存文件
+#plt.show()
+
+
+
+
 
 
 
